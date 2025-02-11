@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Report Issue</title>
+    <link rel="stylesheet" href="styles-client.css">
+</head>
+<body>
+
+    <div class="report-container">
+        <h2>Report Vehicle Issue</h2>
+        <p id="client-info"></p>
+
+        <form id="issueForm">
+            <label for="vehicle">Vehicle Model:</label>
+            <input type="text" id="vehicle" required>
+
+            <label for="license">License Plate:</label>
+            <input type="text" id="license" required>
+
+            <label for="problem">Describe the Issue:</label>
+            <textarea id="problem" required></textarea>
+
+            <button type="submit">Submit</button>
+        </form>
+
+        <button id="sosButton" class="sos-btn" style="display: none;" onclick="sendSOS()">🚨 Need Help</button>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

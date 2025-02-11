@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mechanic on the Way</title>
+    <link rel="stylesheet" href="styles-client.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
+    
+</head>
+<body>
+    <div class="search-container">
+        <h2 id="status-text" style="color: beige;">🔍 Searching for Mechanic...</h2>
+        <h3 id="phonenumber"></h3>
+        <div id="map" style="height: 400px; width: 100%;"></div>
+        <p id="eta-info"></p>
+    </div>
+
+    <script>
+        const clientname = localStorage.getItem("clientName");
+        console.log(clientname);
+        const query = { clientname: clientname };
+
+        let mechname = "";
+        let map;
+        let marker;
+        let clientMarker;
+        let routeControl;
+        
+        document.addEventListener("DOMContentLoaded", function() {
+            initMap();
+            funcc();
+        });
+
+        function initMap() {
+            map = L.map('map').setView([0, 0], 13); // Default view, will update
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; OpenStreetMap contributors'
+            }).addTo(map);
+        }
+
+        async function funcc() {
+            try {
+                const response = await fetch("http://localhost:3000/search", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(query),
+                });
+
+                const data = await response.json();
+                console.log("Search Results:", data[0]);
+            
+                if (data.length > 0) {
+                    mechname = data[0].mechname;
+                    mechphone = data[0].mechphone;
+                    const lat = data[0].lat;
+                    const lon = data[0].long;
+                    updateUI(mechname, mechphone, lat, lon);
+                }
+            } catch (error) {
+                console.error("Error:", error);
+            }
+        }
+
+        function updateUI(mechname, mechphone, lat, lon) {
+            document.getElementById("status-text").innerText = mechname + " is allocated..!";
+            document.getElementById("phonenumber").innerText = "Phone number: " + mechphone;
+            
+            if (!marker) {
+                marker = L.marker([lat, lon]).addTo(map)
+                    .bindPopup(mechname + " is here").openPopup();
+            } else {
+                marker.setLatLng([lat, lon]);
+            }
+            
+            let clientLat = localStorage.getItem("latitude");
+            let clientLong = localStorage.getItem("longitude");
+            
+            if (clientLat && clientLong) {
+                clientLat = parseFloat(clientLat);
+                clientLong = parseFloat(clientLong);
+                if (!clientMarker) {
+                    clientMarker = L.marker([clientLat, clientLong], {icon: L.icon({iconUrl: 'client.png', iconSize: [25, 41], iconAnchor: [12, 41]})}).addTo(map)
+                        // .bindPopup("Client Location").openPopup();
+                } else {
+                    clientMarker.setLatLng([clientLat, clientLong]);
+                }
+
+                // Add route between mechanic and client
+                if (routeControl) {
+                    map.removeControl(routeControl);
+                }
+                routeControl = L.Routing.control({
+                    waypoints: [
+                        L.latLng(clientLat, clientLong),
+                        L.latLng(lat, lon)
+                    ],
+                    routeWhileDragging: true
+                }).addTo(map);
+            }
+            
+            map.setView([lat, lon], 13);
+        }
+
+        setInterval(funcc, 5000);
+    </script>
+</body>
+</html>

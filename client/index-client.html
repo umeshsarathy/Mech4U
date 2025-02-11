@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client Login</title>
+    <link rel="stylesheet" href="styles-client.css">
+    <script src="script1.js"></script>
+</head>
+<body>
+
+    <div class="login-container">
+        <h2>Client Login</h2>
+        <form id="loginForm">
+            <label for="name">Name:</label>
+            <input type="text" id="name" required>
+            
+            <label for="phone">Phone Number:</label>
+            <input type="tel" id="phone" required pattern="[0-9]{10}" title="Enter a valid 10-digit number">
+            
+            <!-- <label for="aadhaar">Aadhaar Number:</label>
+            <input type="text" id="aadhaar" required pattern="[0-9]{12}" title="Enter a valid 12-digit Aadhaar number">
+
+            <button type="button" id="sendOtp">Send OTP</button>
+
+            <label for="otp">Enter OTP:</label>
+            <input type="text" id="otp" required disabled>
+
+            <button type="button" id="verifyOtp" disabled>Verify OTP</button> -->
+            <button type="submit">Login</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById("loginForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+            const name = document.getElementById("name").value;
+            const phone = document.getElementById("phone").value;
+
+            sendOTP();
+            //verifyOTP();
+            localStorage.setItem("clientName", name);
+            localStorage.setItem("clientPhone", phone);
+
+            window.location.href = "issue-report.html";
+        });
+    </script>
+
+</body>
+</html>

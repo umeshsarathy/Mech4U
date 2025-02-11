@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client Location</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
+</head>
+<body>
+    <div class="search-container">
+    <h2 id="clientName"></h2>
+    <h3 id="clientPhone"></h3>
+    <div id="map" style="height: 400px; width: 100%;"></div>
+    <br>
+</div>
+    
+
+    <script>
+        const clientName = localStorage.getItem("ClientName");
+        const clientPhone = localStorage.getItem("ClientPhone");
+        const clientLat = parseFloat(localStorage.getItem("ClientLat"));
+        const clientLong = parseFloat(localStorage.getItem("ClientLong"));
+        const mechLat = parseFloat(localStorage.getItem("latitude"));
+        const mechLong = parseFloat(localStorage.getItem("longitude"));
+
+        document.getElementById("clientName").innerText = "Client: " + clientName;
+        document.getElementById("clientPhone").innerText = "Phone-Number: " + clientPhone;
+
+        const map = L.map('map').setView([clientLat, clientLong], 13);
+        
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+
+        const clientMarker = L.marker([clientLat, clientLong]).addTo(map)
+            .bindPopup("Client Location").openPopup();
+
+        const mechMarker = L.marker([mechLat, mechLong]).addTo(map)
+            // .bindPopup("Mechanic Location").openPopup();
+
+        L.Routing.control({
+            waypoints: [
+                L.latLng(clientLat, clientLong),
+                L.latLng(mechLat, mechLong)
+            ],
+            routeWhileDragging: true,
+            createMarker: function() { return null; } // Hide default markers
+        }).addTo(map);
+    </script>
+</body>
+</html>
